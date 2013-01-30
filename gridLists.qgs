@@ -1,0 +1,357 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis projectname="" version="1.9.90-Alpha">
+    <title></title>
+    <mapcanvas>
+        <units>degrees</units>
+        <extent>
+            <xmin>-27.074289</xmin>
+            <ymin>-8.827443</ymin>
+            <xmax>44.850124</xmax>
+            <ymax>39.606157</ymax>
+        </extent>
+        <projections>1</projections>
+        <destinationsrs>
+            <spatialrefsys>
+                <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+                <srsid>3452</srsid>
+                <srid>4326</srid>
+                <authid>EPSG:4326</authid>
+                <description>WGS 84</description>
+                <projectionacronym>longlat</projectionacronym>
+                <ellipsoidacronym>WGS84</ellipsoidacronym>
+                <geographicflag>true</geographicflag>
+            </spatialrefsys>
+        </destinationsrs>
+    </mapcanvas>
+    <legend updateDrawingOrder="true">
+        <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="sahel" showFeatureCount="0">
+            <filegroup open="false" hidden="false">
+                <legendlayerfile isInOverview="0" layerid="sahel20130129175534206" visible="0"/>
+            </filegroup>
+        </legendlayer>
+        <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="sahel" showFeatureCount="0">
+            <filegroup open="false" hidden="false">
+                <legendlayerfile isInOverview="0" layerid="sahel20130129180955013" visible="1"/>
+            </filegroup>
+        </legendlayer>
+        <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="gadm2" showFeatureCount="0">
+            <filegroup open="false" hidden="false">
+                <legendlayerfile isInOverview="0" layerid="gadm220130129124634645" visible="1"/>
+            </filegroup>
+        </legendlayer>
+    </legend>
+    <projectlayers layercount="3">
+        <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+            <id>gadm220130129124634645</id>
+            <datasource>./data/gadm2.shp|layerid=0</datasource>
+            <title></title>
+            <abstract></abstract>
+            <layername>gadm2</layername>
+            <srs>
+                <spatialrefsys>
+                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+                    <srsid>3452</srsid>
+                    <srid>4326</srid>
+                    <authid>EPSG:4326</authid>
+                    <description>WGS 84</description>
+                    <projectionacronym>longlat</projectionacronym>
+                    <ellipsoidacronym>WGS84</ellipsoidacronym>
+                    <geographicflag>true</geographicflag>
+                </spatialrefsys>
+            </srs>
+            <transparencyLevelInt>24</transparencyLevelInt>
+            <provider encoding="UTF-8">ogr</provider>
+            <vectorjoins/>
+            <singlesymbol>
+                <symbol>
+                    <lowervalue></lowervalue>
+                    <uppervalue></uppervalue>
+                    <label></label>
+                    <pointsymbol>hard:circle</pointsymbol>
+                    <pointsize>2</pointsize>
+                    <pointsizeunits>pixels</pointsizeunits>
+                    <rotationclassificationfieldname></rotationclassificationfieldname>
+                    <scaleclassificationfieldname></scaleclassificationfieldname>
+                    <symbolfieldname></symbolfieldname>
+                    <outlinecolor red="0" blue="0" green="0"/>
+                    <outlinestyle>NoPen</outlinestyle>
+                    <outlinewidth>0.1</outlinewidth>
+                    <fillcolor red="0" blue="0" green="0"/>
+                    <fillpattern>SolidPattern</fillpattern>
+                    <texturepath null="1"></texturepath>
+                </symbol>
+            </singlesymbol>
+            <customproperties/>
+            <displayfield>OBJECTID</displayfield>
+            <label>0</label>
+            <labelattributes>
+                <label fieldname="" text="Label"/>
+                <family fieldname="" name="Lucida Grande"/>
+                <size fieldname="" units="pt" value="12"/>
+                <bold fieldname="" on="0"/>
+                <italic fieldname="" on="0"/>
+                <underline fieldname="" on="0"/>
+                <strikeout fieldname="" on="0"/>
+                <color fieldname="" red="0" blue="0" green="0"/>
+                <x fieldname=""/>
+                <y fieldname=""/>
+                <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
+                <angle fieldname="" value="0" auto="0"/>
+                <alignment fieldname="" value="center"/>
+                <buffercolor fieldname="" red="255" blue="255" green="255"/>
+                <buffersize fieldname="" units="pt" value="1"/>
+                <bufferenabled fieldname="" on=""/>
+                <multilineenabled fieldname="" on=""/>
+                <selectedonly on=""/>
+            </labelattributes>
+            <edittypes>
+                <edittype type="0" name="CC_1"/>
+                <edittype type="0" name="CC_2"/>
+                <edittype type="0" name="ENGTYPE4"/>
+                <edittype type="0" name="ENGTYPE_1"/>
+                <edittype type="0" name="ENGTYPE_2"/>
+                <edittype type="0" name="ENGTYPE_3"/>
+                <edittype type="0" name="ENGTYPE_4"/>
+                <edittype type="0" name="ENGTYPE_5"/>
+                <edittype type="0" name="HASC_1"/>
+                <edittype type="0" name="HASC_2"/>
+                <edittype type="0" name="HASC_3"/>
+                <edittype type="0" name="ID_0"/>
+                <edittype type="0" name="ID_1"/>
+                <edittype type="0" name="ID_2"/>
+                <edittype type="0" name="ID_3"/>
+                <edittype type="0" name="ID_4"/>
+                <edittype type="0" name="ID_5"/>
+                <edittype type="0" name="ISO"/>
+                <edittype type="0" name="NAME_0"/>
+                <edittype type="0" name="NAME_1"/>
+                <edittype type="0" name="NAME_2"/>
+                <edittype type="0" name="NAME_3"/>
+                <edittype type="0" name="NAME_4"/>
+                <edittype type="0" name="NAME_5"/>
+                <edittype type="0" name="NL_NAME_1"/>
+                <edittype type="0" name="NL_NAME_2"/>
+                <edittype type="0" name="NL_NAME_3"/>
+                <edittype type="0" name="OBJECTID"/>
+                <edittype type="0" name="REMARKS_1"/>
+                <edittype type="0" name="REMARKS_2"/>
+                <edittype type="0" name="REMARKS_3"/>
+                <edittype type="0" name="REMARKS_4"/>
+                <edittype type="0" name="Shape_Area"/>
+                <edittype type="0" name="Shape_Leng"/>
+                <edittype type="0" name="TYPE4"/>
+                <edittype type="0" name="TYPE_1"/>
+                <edittype type="0" name="TYPE_2"/>
+                <edittype type="0" name="TYPE_3"/>
+                <edittype type="0" name="TYPE_4"/>
+                <edittype type="0" name="TYPE_5"/>
+                <edittype type="0" name="VALIDFR_1"/>
+                <edittype type="0" name="VALIDFR_2"/>
+                <edittype type="0" name="VALIDFR_3"/>
+                <edittype type="0" name="VALIDFR_4"/>
+                <edittype type="0" name="VALIDTO_1"/>
+                <edittype type="0" name="VALIDTO_2"/>
+                <edittype type="0" name="VALIDTO_3"/>
+                <edittype type="0" name="VALIDTO_4"/>
+                <edittype type="0" name="VARNAME_1"/>
+                <edittype type="0" name="VARNAME_2"/>
+                <edittype type="0" name="VARNAME_3"/>
+                <edittype type="0" name="VARNAME_4"/>
+            </edittypes>
+            <editform></editform>
+            <editforminit></editforminit>
+            <annotationform></annotationform>
+            <attributeactions/>
+        </maplayer>
+        <maplayer minimumScale="0" maximumScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0">
+            <id>sahel20130129175534206</id>
+            <datasource>./data/sahel.shp</datasource>
+            <title></title>
+            <abstract></abstract>
+            <layername>sahel</layername>
+            <srs>
+                <spatialrefsys>
+                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+                    <srsid>3452</srsid>
+                    <srid>4326</srid>
+                    <authid>EPSG:4326</authid>
+                    <description>WGS 84</description>
+                    <projectionacronym>longlat</projectionacronym>
+                    <ellipsoidacronym>WGS84</ellipsoidacronym>
+                    <geographicflag>true</geographicflag>
+                </spatialrefsys>
+            </srs>
+            <transparencyLevelInt>255</transparencyLevelInt>
+            <provider encoding="UTF-8">ogr</provider>
+            <vectorjoins/>
+            <renderer-v2 symbollevels="0" type="singleSymbol">
+                <symbols>
+                    <symbol outputUnit="MM" alpha="1" type="fill" name="0">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="220,131,201,255"/>
+                            <prop k="color_border" v="255,255,255,255"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="no"/>
+                            <prop k="style_border" v="solid"/>
+                            <prop k="width_border" v="0.5"/>
+                        </layer>
+                    </symbol>
+                </symbols>
+                <rotation field=""/>
+                <sizescale field=""/>
+            </renderer-v2>
+            <customproperties/>
+            <displayfield>OBJECTID</displayfield>
+            <label>0</label>
+            <labelattributes>
+                <label fieldname="" text="Label"/>
+                <family fieldname="" name="Lucida Grande"/>
+                <size fieldname="" units="pt" value="12"/>
+                <bold fieldname="" on="0"/>
+                <italic fieldname="" on="0"/>
+                <underline fieldname="" on="0"/>
+                <strikeout fieldname="" on="0"/>
+                <color fieldname="" red="0" blue="0" green="0"/>
+                <x fieldname=""/>
+                <y fieldname=""/>
+                <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
+                <angle fieldname="" value="0" auto="0"/>
+                <alignment fieldname="" value="center"/>
+                <buffercolor fieldname="" red="255" blue="255" green="255"/>
+                <buffersize fieldname="" units="pt" value="1"/>
+                <bufferenabled fieldname="" on=""/>
+                <multilineenabled fieldname="" on=""/>
+                <selectedonly on=""/>
+            </labelattributes>
+            <edittypes>
+                <edittype type="0" name="CC_1"/>
+                <edittype type="0" name="CC_2"/>
+                <edittype type="0" name="ENGTYPE4"/>
+                <edittype type="0" name="ENGTYPE_1"/>
+                <edittype type="0" name="ENGTYPE_2"/>
+                <edittype type="0" name="ENGTYPE_3"/>
+                <edittype type="0" name="ENGTYPE_4"/>
+                <edittype type="0" name="ENGTYPE_5"/>
+                <edittype type="0" name="HASC_1"/>
+                <edittype type="0" name="HASC_2"/>
+                <edittype type="0" name="HASC_3"/>
+                <edittype type="0" name="ID_0"/>
+                <edittype type="0" name="ID_1"/>
+                <edittype type="0" name="ID_2"/>
+                <edittype type="0" name="ID_3"/>
+                <edittype type="0" name="ID_4"/>
+                <edittype type="0" name="ID_5"/>
+                <edittype type="0" name="ISO"/>
+                <edittype type="0" name="NAME_0"/>
+                <edittype type="0" name="NAME_1"/>
+                <edittype type="0" name="NAME_2"/>
+                <edittype type="0" name="NAME_3"/>
+                <edittype type="0" name="NAME_4"/>
+                <edittype type="0" name="NAME_5"/>
+                <edittype type="0" name="NL_NAME_1"/>
+                <edittype type="0" name="NL_NAME_2"/>
+                <edittype type="0" name="NL_NAME_3"/>
+                <edittype type="0" name="OBJECTID"/>
+                <edittype type="0" name="REMARKS_1"/>
+                <edittype type="0" name="REMARKS_2"/>
+                <edittype type="0" name="REMARKS_3"/>
+                <edittype type="0" name="REMARKS_4"/>
+                <edittype type="0" name="Shape_Area"/>
+                <edittype type="0" name="Shape_Leng"/>
+                <edittype type="0" name="TYPE4"/>
+                <edittype type="0" name="TYPE_1"/>
+                <edittype type="0" name="TYPE_2"/>
+                <edittype type="0" name="TYPE_3"/>
+                <edittype type="0" name="TYPE_4"/>
+                <edittype type="0" name="TYPE_5"/>
+                <edittype type="0" name="VALIDFR_1"/>
+                <edittype type="0" name="VALIDFR_2"/>
+                <edittype type="0" name="VALIDFR_3"/>
+                <edittype type="0" name="VALIDFR_4"/>
+                <edittype type="0" name="VALIDTO_1"/>
+                <edittype type="0" name="VALIDTO_2"/>
+                <edittype type="0" name="VALIDTO_3"/>
+                <edittype type="0" name="VALIDTO_4"/>
+                <edittype type="0" name="VARNAME_1"/>
+                <edittype type="0" name="VARNAME_2"/>
+                <edittype type="0" name="VARNAME_3"/>
+                <edittype type="0" name="VARNAME_4"/>
+            </edittypes>
+            <editform></editform>
+            <editforminit></editforminit>
+            <annotationform></annotationform>
+            <attributeactions/>
+        </maplayer>
+        <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
+            <id>sahel20130129180955013</id>
+            <datasource>./data/sahel.tif</datasource>
+            <title></title>
+            <abstract></abstract>
+            <layername>sahel</layername>
+            <srs>
+                <spatialrefsys>
+                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+                    <srsid>3452</srsid>
+                    <srid>4326</srid>
+                    <authid>EPSG:4326</authid>
+                    <description>WGS 84</description>
+                    <projectionacronym>longlat</projectionacronym>
+                    <ellipsoidacronym>WGS84</ellipsoidacronym>
+                    <geographicflag>true</geographicflag>
+                </spatialrefsys>
+            </srs>
+            <transparencyLevelInt>255</transparencyLevelInt>
+            <customproperties/>
+            <provider>gdal</provider>
+            <rasterproperties>
+                <mDrawingStyle>SingleBandGray</mDrawingStyle>
+                <mColorShadingAlgorithm>UndefinedShader</mColorShadingAlgorithm>
+                <mInvertColor boolean="false"/>
+                <mRedBandName>Not Set</mRedBandName>
+                <mGreenBandName>Not Set</mGreenBandName>
+                <mBlueBandName>Not Set</mBlueBandName>
+                <mGrayBandName>Band 1</mGrayBandName>
+                <mStandardDeviations>0</mStandardDeviations>
+                <mUserDefinedRGBMinimumMaximum boolean="false"/>
+                <mRGBMinimumMaximumEstimated boolean="true"/>
+                <mUserDefinedGrayMinimumMaximum boolean="false"/>
+                <mGrayMinimumMaximumEstimated boolean="true"/>
+                <mContrastEnhancementAlgorithm>NoEnhancement</mContrastEnhancementAlgorithm>
+                <contrastEnhancementMinMaxValues>
+                    <minMaxEntry>
+                        <min>0</min>
+                        <max>255</max>
+                    </minMaxEntry>
+                </contrastEnhancementMinMaxValues>
+                <mNoDataValue mValidNoDataValue="true">255.000000</mNoDataValue>
+                <singleValuePixelList>
+                    <pixelListEntry pixelValue="255.000000" percentTransparent="100"/>
+                </singleValuePixelList>
+                <threeValuePixelList>
+                    <pixelListEntry red="255.000000" blue="255.000000" green="255.000000" percentTransparent="100"/>
+                </threeValuePixelList>
+            </rasterproperties>
+        </maplayer>
+    </projectlayers>
+    <properties>
+        <SpatialRefSys>
+            <ProjectCrs type="QString">EPSG:4326</ProjectCrs>
+        </SpatialRefSys>
+        <Paths>
+            <Absolute type="bool">false</Absolute>
+        </Paths>
+        <Gui>
+            <SelectionColorBluePart type="int">0</SelectionColorBluePart>
+            <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
+            <CanvasColorRedPart type="int">255</CanvasColorRedPart>
+            <SelectionColorRedPart type="int">255</SelectionColorRedPart>
+            <SelectionColorAlphaPart type="int">255</SelectionColorAlphaPart>
+            <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
+            <CanvasColorBluePart type="int">255</CanvasColorBluePart>
+        </Gui>
+        <PositionPrecision>
+            <DecimalPlaces type="int">2</DecimalPlaces>
+            <Automatic type="bool">true</Automatic>
+        </PositionPrecision>
+    </properties>
+</qgis>

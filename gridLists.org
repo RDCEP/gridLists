@@ -1,0 +1,224 @@
+
+* Download the GADM data
+
+#+begin_src sh
+  wget http://www.gadm.org/data2/gadm_v2_shp.zip -O data/gadm_v2_shp.zip
+  unzip data/gadm_v2_shp.zip -d data
+#+end_src
+
+* Find the Sahelian countries
+  :PROPERTIES:
+  :session:  *R:2*
+  :END:
+
+#+begin_src R
+  library( ascii)
+  options( asciiType= "org")
+  
+  library( foreign)
+  
+  gadmDbf <- read.dbf( "data/gadm2.dbf")
+  iso <- unique( gadmDbf[, c("ISO", "NAME_0")])
+  
+  sahel <-
+    iso[ iso$NAME_0 %in%
+        c( "Cape Verde",
+          "Guinea-Bissau",
+          "Gambia",
+          "Burkina Faso",
+          "Senegal",
+          "Mauritania",
+          "Mali",
+          "Niger",
+          "Chad",
+          "Sudan",
+          "South Sudan",
+          "Eritrea"), ]
+  colnames( sahel) <- c( "ISO", "Name")
+  
+  
+#+end_src
+
+#+name: sahelCountriesTable
+#+begin_src R :results output org replace :exports both
+  ascii(
+    sahel,
+    include.rownames= FALSE)
+#+end_src
+
+#+RESULTS: sahelCountriesTable
+#+BEGIN_ORG
+ | ISO | Name          |
+|-----+---------------|
+| BFA | Burkina Faso  |
+| CPV | Cape Verde    |
+| TCD | Chad          |
+| ERI | Eritrea       |
+| GMB | Gambia        |
+| GNB | Guinea-Bissau |
+| MLI | Mali          |
+| MRT | Mauritania    |
+| NER | Niger         |
+| SEN | Senegal       |
+| SSD | South Sudan   |
+| SDN | Sudan         |
+#+END_ORG
+
+#+name: sahelString()
+#+begin_src R :results value verbatim replace :exports both
+  whereClause <-
+    sprintf(
+      "-where 'ISO IN (\"%s\")'",
+      paste(
+        as.character( sahel$ISO),
+        collapse= "\",\""))
+#+end_src
+
+#+RESULTS: sahelString
+: -where 'ISO IN ("BFA","CPV","TCD","ERI","GMB","GNB","MLI","MRT","NER","SEN","SSD","SDN")'
+
+#+name: sahelOgrCmd()
+#+begin_src R :results value verbatim replace
+    paste( "ogr2ogr -progress -overwrite", whereClause,
+          "data/sahel.shp data/gadm2.shp gadm2")
+#+end_src
+
+#+RESULTS: sahelOgrCmd
+: ogr2ogr -progress -overwrite -where 'ISO IN ("BFA","CPV","TCD","ERI","GMB","GNB","MLI","MRT","NER","SEN","SSD","SDN")' data/sahel.shp data/gadm2.shp gadm2
+
+  
+#+name: sahelOgr
+#+begin_src sh :results output replace :session *shell* :noweb yes
+  <<sahelOgrCmd()>>
+#+end_src
+
+
+#+RESULTS: sahelOgr
+: 0...10...20...30...40...50...60...70...80...90...100 - done.
+
+#+begin_src sh :results output replace :session *shell*
+  gdal_rasterize -at -a_nodata 255 -init 255 -burn 1 \
+    -te -180 -90 180 90 -tr 0.5 0.5 -ot Byte \
+    -l sahel data/sahel.shp data/sahel.tif
+#+end_src
+
+#+RESULTS:
+: 
+: > 0...10...20...30...40...50...60...70...80...90...100 - done.
+
+#+begin_src sh :session *shell* :results silent
+  qgis --extent -27,-9,45,40 --snapshot images/sahel.png gridLists.qgs
+#+end_src
+
+#+CAPTION: Grid cells modeled in the Sahel region
+#+LABEL:   fig:sahel
+[[images/sahel.png]]
+
+
+#+begin_src R
+  library( raster)
+  
+  sahel <- raster( "data/sahel.tif")
+  NAvalue( sahel) <- 255
+  sahel <- setMinMax( sahel)
+  
+  sahelCells <- ( 1: ncell( sahel))[ which( sahel[] == 1)]
+  
+  world <- function( cellRes= 0.5) {
+    world <- raster()
+    res( world) <- cellRes
+    world
+  }
+  
+  translateCells <- function(
+    x,
+    from= world(),
+    to= world( 5/60),
+    offset= -res( to) /2) {
+    cellFromXY(
+      to,
+      xyFromCell( from, x) + offset)
+  }
+  
+  
+#+end_src
+
+#+name: sahelCellsTable
+#+begin_src R :results output org replace :exports both
+    ascii(
+      head( 
+        data.frame( 
+          sahelCells,
+          translateCells( sahelCells))),
+      digits= 0,
+      colnames= c( "30 min", "5 min"),
+      include.rownames= FALSE)
+#+end_src
+
+#+RESULTS: sahelCellsTable
+#+BEGIN_ORG
+ | 30 min | 5 min   |
+|--------+---------|
+| 90343  | 3255015 |
+| 90344  | 3255021 |
+| 91063  | 3280935 |
+| 91064  | 3280941 |
+| 91065  | 3280947 |
+| 91066  | 3280953 |
+#+END_ORG
+
+#+begin_src ditaa :file images/cells.png :cmdline --no-separation --no-shadows
+                            
+           |                 |  
+  89622    |     89623       |    89624
+           |                 |             
+     ------+-----------------+-------      
+           |                 |             
+  90342    |     90343       |    90344    
+           |                 |           
+           |                 |          
+           |                 |          
+           |     +--+        |     +--+       
+           |     :  |        |     :  |       
+           |     +--+        |     +--+       
+           |       ^         |       ^        
+           |       |         |       |        
+           |       +-3255015 |       +-3255021
+     ------+-----------------+-------  
+           |                 |         
+  91062    |     91063       |    91064  
+           |                 |           
+                                   
+                          
+#+end_src
+
+#+RESULTS:
+[[file:images/cells.png]]
+
+#+begin_src R :results silent
+  
+  cat( sahelCells,
+      file= "data/sahel.cells.30min",
+      sep="\n")
+  
+  cat( translateCells( sahelCells),
+      file= "data/sahel.cells.30min_5min",
+      sep= "\n")
+  
+  cat( paste( substr( translateCells( sahelCells), 1, 3), translateCells( sahelCells), sep="/"),
+      file= "data/sahel.dirs.30min_5min",
+      sep= "\n")
+  
+#+end_src
+
+#+begin_src sh :session *shell* :results output verbatim 
+  set -x
+  scp -BCq data/sahel.*30min* midway:/project/joshuaelliott/psims/gridLists/isimip
+  set +x
+#+end_src
+
+#+RESULTS:
+: 
+: + scp -BCq data/sahel.cells.30min data/sahel.cells.30min_5min data/sahel.dirs.30min_5min midway:/project/joshuaelliott/psims/gridLists/isimip
+: + set +x
+
