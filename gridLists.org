@@ -1,17 +1,33 @@
+#+TITLE:     gridLists.org
+#+AUTHOR:    Neil Best
+#+EMAIL:     nbest@ci.uchicago.edu
+#+DATE:      2013-02-04 Mon
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+
+#+PROPERTY: session *R*
+#+PROPERTY: eval yes
 
 * Download the GADM data
 
-#+begin_src sh
+#+begin_src sh :eval no
   wget http://www.gadm.org/data2/gadm_v2_shp.zip -O data/gadm_v2_shp.zip
   unzip data/gadm_v2_shp.zip -d data
 #+end_src
 
-* Find the Sahelian countries
-  :PROPERTIES:
-  :session:  *R:2*
-  :END:
 
-#+begin_src R
+* Find the Sahelian countries
+
+#+begin_src R :results silent
   library( ascii)
   options( asciiType= "org")
   
@@ -43,12 +59,15 @@
 #+begin_src R :results output org replace :exports both
   ascii(
     sahel,
-    include.rownames= FALSE)
+    include.rownames= FALSE,
+    caption= "ISO codes for countries in the Sahel")
 #+end_src
 
+#+LABEL: tab:iso
 #+RESULTS: sahelCountriesTable
 #+BEGIN_ORG
- | ISO | Name          |
+ #+CAPTION: ISO codes for countries in the Sahel
+| ISO | Name          |
 |-----+---------------|
 | BFA | Burkina Faso  |
 | CPV | Cape Verde    |
@@ -64,31 +83,64 @@
 | SDN | Sudan         |
 #+END_ORG
 
+
+
 #+name: sahelString()
-#+begin_src R :results value verbatim replace :exports both
+#+begin_src R :results value verbatim replace :exports code
   whereClause <-
     sprintf(
-      "-where 'ISO IN (\"%s\")'",
+      "-where 'ISO IN (\n\"%s\")'",
       paste(
         as.character( sahel$ISO),
-        collapse= "\",\""))
+        collapse= "\",\n\""))
 #+end_src
 
 #+RESULTS: sahelString
-: -where 'ISO IN ("BFA","CPV","TCD","ERI","GMB","GNB","MLI","MRT","NER","SEN","SSD","SDN")'
+#+begin_example
+-where 'ISO IN (
+"BFA",
+"CPV",
+"TCD",
+"ERI",
+"GMB",
+"GNB",
+"MLI",
+"MRT",
+"NER",
+"SEN",
+"SSD",
+"SDN")'
+#+end_example
 
 #+name: sahelOgrCmd()
-#+begin_src R :results value verbatim replace
-    paste( "ogr2ogr -progress -overwrite", whereClause,
-          "data/sahel.shp data/gadm2.shp gadm2")
+#+begin_src R :results value verbatim replace :exports both
+      paste( "ogr2ogr -progress -overwrite", whereClause,
+            "data/sahel.shp data/gadm2.shp gadm2",
+            sep= " \\\n")
 #+end_src
 
 #+RESULTS: sahelOgrCmd
-: ogr2ogr -progress -overwrite -where 'ISO IN ("BFA","CPV","TCD","ERI","GMB","GNB","MLI","MRT","NER","SEN","SSD","SDN")' data/sahel.shp data/gadm2.shp gadm2
+#+begin_example
+ogr2ogr -progress -overwrite \
+-where 'ISO IN (
+"BFA",
+"CPV",
+"TCD",
+"ERI",
+"GMB",
+"GNB",
+"MLI",
+"MRT",
+"NER",
+"SEN",
+"SSD",
+"SDN")' \
+data/sahel.shp data/gadm2.shp gadm2
+#+end_example
 
   
 #+name: sahelOgr
-#+begin_src sh :results output replace :session *shell* :noweb yes
+#+begin_src sh :results output replace :session *shell* :noweb yes :exports none
   <<sahelOgrCmd()>>
 #+end_src
 
@@ -96,7 +148,7 @@
 #+RESULTS: sahelOgr
 : 0...10...20...30...40...50...60...70...80...90...100 - done.
 
-#+begin_src sh :results output replace :session *shell*
+#+begin_src sh :results output replace :session *shell* :exports code
   gdal_rasterize -at -a_nodata 255 -init 255 -burn 1 \
     -te -180 -90 180 90 -tr 0.5 0.5 -ot Byte \
     -l sahel data/sahel.shp data/sahel.tif
@@ -106,13 +158,13 @@
 : 
 : > 0...10...20...30...40...50...60...70...80...90...100 - done.
 
-#+begin_src sh :session *shell* :results silent :eval no
+#+begin_src sh :session *shell* :results silent :eval no :exports none
   qgis --extent -27,-9,45,40 --snapshot images/sahel.png gridLists.qgs
 #+end_src
 
 #+CAPTION: Grid cells modeled in the Sahel region
 #+LABEL:   fig:sahel
-[[images/sahel.png]]
+[[./images/sahel.png]]
 
 
 #+begin_src R
@@ -144,31 +196,45 @@
 #+end_src
 
 #+name: sahelCellsTable
-#+begin_src R :results output org replace :exports both
-    ascii(
-      head( 
-        data.frame( 
-          sahelCells,
-          translateCells( sahelCells))),
-      digits= 0,
-      colnames= c( "30 min", "5 min"),
-      include.rownames= FALSE)
+#+begin_src R :results output org replace :exports results
+  ascii(
+    head( 
+      data.frame( 
+        sahelCells,
+        translateCells( sahelCells))),
+    digits= 0,
+    colnames= c( "$30'$", "$5'$"),
+    include.rownames= FALSE,
+    caption= "Correspondence between $30'$ ($0.5^{\\circ}$) and $5'$ grid cell IDs")
 #+end_src
 
+#+label: tab:cells
 #+RESULTS: sahelCellsTable
 #+BEGIN_ORG
- | 30 min | 5 min   |
-|--------+---------|
-| 90343  | 3255015 |
-| 90344  | 3255021 |
-| 91063  | 3280935 |
-| 91064  | 3280941 |
-| 91065  | 3280947 |
-| 91066  | 3280953 |
+ #+CAPTION: Correspondence between $30'$ ($0.5^{\circ}$) and $5'$ grid cell IDs
+| $30'$ | $5'$    |
+|-------+---------|
+| 90343 | 3255015 |
+| 90344 | 3255021 |
+| 91063 | 3280935 |
+| 91064 | 3280941 |
+| 91065 | 3280947 |
+| 91066 | 3280953 |
 #+END_ORG
 
-#+caption: Relationship between $30'$ ($0.5^{\circ}$) and $5'$ grid cells
-#:label: fig:cells
+
+
+
+
+Ocassionally $30'$ grid cells are referred to by the ID of the $5'$
+grid cell whose northeast corner is the center of the containing $30'$
+cell, i.e. the $5'$ immediately to the southwest of the $30'$ cells
+center point.  See Table \ref{tab:cells} and Figure \ref{fig:cells}
+for further illustration.
+
+
+#+caption: Spatial relationship between $30'$ ($0.5^{\circ}$) and $5'$ grid cells
+#+label: fig:cells
 #+begin_src ditaa :file images/cells.png :cmdline --no-separation --no-shadows
                             
            |                 |  
@@ -213,7 +279,7 @@
   
 #+end_src
 
-#+begin_src sh :session *shell* :results output verbatim 
+#+begin_src sh :session *shell* :results output verbatim :eval no
   set -x
   scp -BCq data/sahel.*30min* midway:/project/joshuaelliott/psims/gridLists/isimip
   set +x
@@ -226,9 +292,6 @@
 
 
 * Niger
-  :PROPERTIES:
-  :session:  *R:2*
-  :END:
 
 #+begin_src R :results silent
   
@@ -299,7 +362,7 @@
 
 #+CAPTION: Grid cells to model in Niger
 #+LABEL:   fig:niger
-[[images/niger.png]]
+[[./images/niger.png]]
 
 
 #+begin_src R
@@ -326,7 +389,7 @@
   
 #+end_src
 
-#+begin_src sh :session *shell* :results output verbatim 
+#+begin_src sh :session *shell* :results output verbatim :eval no
   set -x
   scp -BCq data/niger.*30min* midway:/project/joshuaelliott/psims/gridLists/isimip
   set +x
@@ -340,9 +403,6 @@
 
 
 * India
-  :PROPERTIES:
-  :session:  *R:2*
-  :END:
 
 #+begin_src R :results silent
   
@@ -425,7 +485,7 @@
 
 #+CAPTION: Grid cells to model in India
 #+LABEL:   fig:india
-[[images/india.png]]
+[[./images/india.png]]
 
 #+begin_src R :results silent
   
@@ -443,15 +503,181 @@
   
 #+end_src
 
-#+begin_src sh :session *shell* :results output verbatim 
-  set -x
-  scp -BCq data/india.*30min* midway:/project/joshuaelliott/psims/gridLists/isimip
-  set +x
+#+begin_src sh :session *shell* :results output verbatim :eval yes
+  rsync -avvz --checksum data/india.*30min* midway:/project/joshuaelliott/psims/gridLists/isimip/nbest
 #+end_src
 
 #+RESULTS:
-: 
-: + scp -BCq data/india.cells.30min data/india.cells.30min_5min data/india.dirs.30min_5min midway:/project/joshuaelliott/psims/gridLists/isimip
-: + set +x
+#+begin_example
+opening connection using ssh midway rsync --server -vvlogDtprcz . /project/joshuaelliott/psims/gridLists/isimip/nbest 
+building file list ... 
+done
+delta-transmission enabled
+india.cells.30min is uptodate
+india.cells.30min_5min is uptodate
+india.dirs.30min_5min is uptodate
+total: matches=0  hash_hits=0  false_alarms=0 data=0
 
+sent 188 bytes  received 38 bytes  90.40 bytes/sec
+total size is 34579  speedup is 153.00
+#+end_example
+
+
+
+* Food-Producing Units (FPUs)
+
+Download the FPU data provided by Dieter Gerten from PIK.  For now we
+have it in a Dropbox folder but it would be good to convince Dieter to
+use Figshare so we could cite and access it there.
+
+#+begin_src sh :session :results output replace 
+    wget --no-verbose --no-check-certificate \
+        https://www.dropbox.com/s/mca8nrzwee1inne/fpu%20mask.zip?m \
+        -O data/fpu\ mask.zip
+    unzip -l data/fpu\ mask.zip
+    unzip -o -d data data/fpu\ mask.zip
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Archive:  data/fpu mask.zip
+  Length     Date   Time    Name
+ --------    ----   ----    ----
+  1379530  08-21-12 06:48   fpu_rastermask.asc
+        0  09-05-12 11:29   fpu_wgs84/
+    11254  07-23-12 05:00   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.dbf
+      145  07-23-12 04:59   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.prj
+     3332  07-23-12 04:59   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.sbn
+      404  07-23-12 04:59   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.sbx
+   494164  07-23-12 05:00   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.shp
+     8323  07-23-12 04:59   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.shp.xml
+     2572  07-23-12 05:00   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.shx
+ --------                   -------
+  1899724                   9 files
+Archive:  data/fpu mask.zip
+  inflating: data/fpu_rastermask.asc  
+  inflating: data/fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.dbf  
+  inflating: data/fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.prj  
+  inflating: data/fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.sbn  
+  inflating: data/fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.sbx  
+  inflating: data/fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.shp  
+  inflating: data/fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.shp.xml  
+  inflating: data/fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.shx  
+#+end_example
+
+This is the citation information that we currently have for the FPU
+data:
+
+"Cai & Rosegrant 2002; Rosegrant et al., 2002; de Fraiture, 2007; with
+modifications by M. Kummu and P. Ward (pers. comm.) building on Kummu
+et al., 2010" (you can leave out Rosegrant et al. 2002 and the
+pers. comm. if you like)
+
+Cai, X. & Rosegrant, M. Global water demand and supply
+projections. Part 1: a modeling approach. Water Int. 27, 159–69
+(2002).
+
+de Fraiture, C. Integrated water and food analysis at the global and
+basin level. An application of WATERSIM. Water Resour. Manage. 21,
+185–98 (2007).
+
+Rosegrant, M., Cai, X. & Cline, S. World Water and Food
+to 2025. Dealing with Scarcity. International Food Policy Research
+Institute (IFPRI), Washington D.C. (2002).
+
+Kummu, M., Ward, P. J., de Moel, H. & Varis, O. Is physical water
+scarcity a new phenomenon? Global assessment of water shortage over
+the last two millennia. Environ. Res. Lett. 5, 034006 (2010).
+
+
+
+* Global grid list
+
+Eventually this section will demonstrate how to compute the canonical
+ISI-MIP/HWSD land mask from those base data sets, but for now we are
+simply making a mask raster out of the grid list that we already have.
+
+#+begin_src sh :session *shell* :results output verbatim :eval yes
+  rsync -avvz --checksum midway:/project/joshuaelliott/psims/gridLists/isimip/isi.wrld.30arcm data
+#+end_src 
+
+#+RESULTS:
+: opening connection using ssh midway rsync --server --sender -vvlogDtprcz . /project/joshuaelliott/psims/gridLists/isimip/isi.wrld.30arcm 
+: receiving file list ... 
+: done
+: delta-transmission enabled
+: isi.wrld.30arcm is uptodate
+: total: matches=0  hash_hits=0  false_alarms=0 data=0
+: 
+: sent 26 bytes  received 188 bytes  142.67 bytes/sec
+: total size is 678444  speedup is 3170.30
+
+The contents of this file look like this:
+
+#+begin_src sh :session *shell* :results output verbatim :eval yes :exports both
+  head data/isi.wrld.30arcm
+#+end_src
+
+#+RESULTS:
+#+begin_example
+120/1205283
+120/1205289
+120/1205295
+120/1205301
+120/1205307
+120/1205313
+120/1205319
+120/1205325
+120/1205331
+120/1205337
+#+end_example
+
+The next code block loads this data and discards the directory
+information:
+
+#+begin_src R
+  
+  library( stringr)
+  
+  worldList <-
+    str_replace(
+      readLines( "data/isi.wrld.30arcm"),
+      pattern= "^[0-9]{3}/",
+      replacement= "")
+  
+#+end_src
+
+Now set up a world raster object and use the grid list as an index to
+set its values:
+
+#+begin_src R
+  library( raster)
+  
+  world <- raster()
+  res( world) <- 5/60
+  
+  worldXY <- xyFromCell( world, as.numeric( worldList))
+  
+  res( world) <- 0.5
+  
+  world[ cellFromXY( world, worldXY)] <- 1
+  
+  world <-
+    writeRaster(
+      world, "data/isi.wrld.30arcm.tif",
+      datatype= "INT1U",
+      NAflag= 255,
+      overwrite= TRUE)
+#+end_src
+
+
+#+CAPTION: Grid cells to model worldwide
+#+LABEL:   fig:world
+[[./images/isi.wrld.30arcm.png]]
+
+
+In the following sections use this raster as a mask to narrow down the
+set of cells that not only coincides with a given country or group of
+countries but also is known to contain soil according to HWSD and has
+weather data in the ISI-MIP inputs.
 
