@@ -635,7 +635,7 @@ The contents of this file look like this:
 The next code block loads this data and discards the directory
 information:
 
-#+begin_src R
+#+begin_src R :results silent 
   
   library( stringr)
   
@@ -646,6 +646,7 @@ information:
       replacement= "")
   
 #+end_src
+
 
 Now set up a world raster object and use the grid list as an index to
 set its values:
@@ -670,14 +671,44 @@ set its values:
       overwrite= TRUE)
 #+end_src
 
+#+RESULTS:
+
 
 #+CAPTION: Grid cells to model worldwide
 #+LABEL:   fig:world
 [[./images/isi.wrld.30arcm.png]]
 
+** Integrate Food-producing Units (FPUs)
 
 In the following sections use this raster as a mask to narrow down the
 set of cells that not only coincides with a given country or group of
 countries but also is known to contain soil according to HWSD and has
 weather data in the ISI-MIP inputs.
 
+* Write out $5'$ grid list for conterminous United States (cUSA)
+
+* Write out $5'$ grid list for NARR extent
+
+Get a NARR file to establish projection and extents.
+
+#+begin_src sh :session *shell* :results output replace
+  wget --no-verbose \
+      --no-host-directories \
+      --directory-prefix=data \
+      http://nomads.ncdc.noaa.gov/data/narr/197901/19790101/narr-a_221_19790101_0000_000.grb
+#+end_src
+
+#+RESULTS:
+: 
+: > > 2013-03-08 15:49:41 URL:http://nomads.ncdc.noaa.gov/data/narr/197901/19790101/narr-a_221_19790101_0000_000.grb [56399426/56399426] -> "data/narr-a_221_19790101_0000_000.grb" [1]
+
+#+begin_src R
+
+
+#+end_src
+#+name: narrOgrCmd()
+#+begin_src R :results value verbatim replace :exports both
+      paste( "ogr2ogr -progress -overwrite", whereClause,
+            "data/sahel.shp data/gadm2.shp gadm2",
+            sep= " \\\n")
+#+end_src
