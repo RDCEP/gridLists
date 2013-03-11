@@ -19,12 +19,29 @@
 
 * Download the GADM data
 
-#+begin_src sh :eval no
-  wget http://www.gadm.org/data2/gadm_v2_shp.zip -O data/gadm_v2_shp.zip
-  unzip data/gadm_v2_shp.zip -d data
+#+begin_src sh :eval yes :results output :session
+  pushd data
+  wget --no-verbose http://www.gadm.org/data2/gadm_v2_shp.zip
+  unzip gadm_v2_shp.zip
+  popd
 #+end_src
 
+#+RESULTS:
+#+begin_example
+/project/joshuaelliott/narr/gridLists/data /project/joshuaelliott/narr/gridLists /project/joshuaelliott/narr
+2013-03-11 11:47:25 URL:http://www.gadm.org/data2/gadm_v2_shp.zip [349551441/349551441] -> "gadm_v2_shp.zip" [1]
+Archive:  gadm_v2_shp.zip
+  inflating: gadm2.prj               
+  inflating: gadm2.sbn               
+  inflating: gadm2.sbx               
+  inflating: gadm2.shp               
+  inflating: gadm2.shx               
+  inflating: read_me.pdf             
+  inflating: gadm2.dbf
+/project/joshuaelliott/narr/gridLists /project/joshuaelliott/narr
+#+end_example
 
+  
 * Find the Sahelian countries
 
 #+begin_src R :results silent
@@ -531,31 +548,18 @@ have it in a Dropbox folder but it would be good to convince Dieter to
 use Figshare so we could cite and access it there.
 
 #+begin_src sh :session :results output replace 
-    wget --no-verbose --no-check-certificate \
-        https://www.dropbox.com/s/mca8nrzwee1inne/fpu%20mask.zip?m \
+    wget --no-clobber --no-verbose --no-check-certificate \
+        https://www.dropbox.com/s/mca8nrzwee1inne/fpu%20mask.zip?dl=1 \
         -O data/fpu\ mask.zip
-    unzip -l data/fpu\ mask.zip
+    # unzip -l data/fpu\ mask.zip
     unzip -o -d data data/fpu\ mask.zip
 #+end_src
 
 #+RESULTS:
 #+begin_example
 Archive:  data/fpu mask.zip
-  Length     Date   Time    Name
- --------    ----   ----    ----
-  1379530  08-21-12 06:48   fpu_rastermask.asc
-        0  09-05-12 11:29   fpu_wgs84/
-    11254  07-23-12 05:00   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.dbf
-      145  07-23-12 04:59   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.prj
-     3332  07-23-12 04:59   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.sbn
-      404  07-23-12 04:59   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.sbx
-   494164  07-23-12 05:00   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.shp
-     8323  07-23-12 04:59   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.shp.xml
-     2572  07-23-12 05:00   fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.shx
- --------                   -------
-  1899724                   9 files
-Archive:  data/fpu mask.zip
   inflating: data/fpu_rastermask.asc  
+   creating: data/fpu_wgs84/
   inflating: data/fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.dbf  
   inflating: data/fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.prj  
   inflating: data/fpu_wgs84/fpu_polyg_wgs84_3_to_dieter.sbn  
@@ -597,7 +601,9 @@ Eventually this section will demonstrate how to compute the canonical
 ISI-MIP/HWSD land mask from those base data sets, but for now we are
 simply making a mask raster out of the grid list that we already have.
 
-#+begin_src sh :session *shell* :results output verbatim :eval yes
+** TODO check if we are running on Midway; if so just use cp
+
+#+begin_src sh :session *shell* :results output verbatim :eval no
   rsync -avvz --checksum midway:/project/joshuaelliott/psims/gridLists/isimip/isi.wrld.30arcm data
 #+end_src 
 
@@ -685,7 +691,9 @@ set of cells that not only coincides with a given country or group of
 countries but also is known to contain soil according to HWSD and has
 weather data in the ISI-MIP inputs.
 
+
 * Write out $5'$ grid list for conterminous United States (cUSA)
+
 
 * Write out $5'$ grid list for NARR extent
 
@@ -702,13 +710,112 @@ Get a NARR file to establish projection and extents.
 : 
 : > > 2013-03-08 15:49:41 URL:http://nomads.ncdc.noaa.gov/data/narr/197901/19790101/narr-a_221_19790101_0000_000.grb [56399426/56399426] -> "data/narr-a_221_19790101_0000_000.grb" [1]
 
-#+begin_src R
+Compose an ogr2ogr command to clip and reproject the political
+boundaries to the NARR region while excluding European and Asian land
+masses.
 
-
-#+end_src
 #+name: narrOgrCmd()
 #+begin_src R :results value verbatim replace :exports both
-      paste( "ogr2ogr -progress -overwrite", whereClause,
-            "data/sahel.shp data/gadm2.shp gadm2",
-            sep= " \\\n")
+  narrGrb <- raster( "data/grb/201301/20130101/narr-a_221_20130101_0000_000.grb")
+  
+  narrProj <- proj4string( narrGrb)
+  
+  clipdstClause <- {
+    e <- extent( narrGrb)
+    sprintf(
+      "-clipdst %0.0f %0.0f %0.0f %0.0f",
+      e@xmin, e@ymin, e@xmax, e@ymax)
+  }
+  
+  paste(
+    "ogr2ogr -progress -overwrite -skipfailures",
+    "-where 'ISO NOT IN (\"ATA\", \"RUS\", \"ISL\", \"IRL\", \"FRA\", \"GBR\", \"PRT\", \"IMN\")'",
+    sprintf( "-t_srs '%s'", narrProj),
+    clipdstClause,
+    "data/narr.shp data/gadm2.shp gadm2",
+    sep= " \\\n")
 #+end_src
+
+#+RESULTS: narrOgrCmd
+: ogr2ogr -progress -overwrite -skipfailures \
+: -where 'ISO NOT IN ("ATA", "RUS", "ISL", "IRL", "FRA", "GBR", "PRT", "IMN")' \
+: -t_srs '+proj=lcc +lat_1=50 +lat_2=50 +lat_0=0 +lon_0=-107 +x_0=0 +y_0=0 +a=6371200 +b=6371200 +units=m +no_defs' \
+: -clipdst -5648874 1620340 5680713 10612591 \
+: data/narr.shp data/gadm2.shp gadm2
+
+#+name: narrOgr
+#+begin_src sh :results output replace :session *shell* :noweb yes :exports none
+  <<narrOgrCmd()>>
+#+end_src
+
+#+RESULTS: narrOgr
+: 
+: > > > 0...10...20...30..ERROR 1: TopologyException: found non-noded intersection between LINESTRING (-4.14204e+06 1.6164e+07, 4.13679e+06 1.61652e+07) and LINESTRING (-4.1319e+06 1.61656e+07, 4.13074e+06 1.61637e+07) at 248283.97587582193 16164602.912761245
+: ERROR 1: TopologyException: found non-noded intersection between LINESTRING (4.13074e+06 1.61637e+07, -4.1319e+06 1.61656e+07) and LINESTRING (4.13679e+06 1.61652e+07, -4.14204e+06 1.6164e+07) at 248283.97587582193 16164602.912761245
+: .40...50...60...70...80...90...100 - done.
+
+Reproject the NARR polygons back to geographic coordinates while
+clipping out Arctic circle and Aleutians west of -180..
+
+#+BEGIN_SRC sh :session *shell* :results output :exports both
+  ogr2ogr -progress -overwrite -skipfailures -t_srs EPSG:4326 \
+  -clipdst -180 0 0 67 \
+  data/narr4326.shp data/narr.shp narr   
+#+END_SRC
+
+#+RESULTS:
+: 
+: > 0...10...20...30...40...50...60...70...80...90...100 - done.
+
+Rasterize
+
+#+BEGIN_SRC sh :session :results output :exports both
+  gdal_rasterize \
+      -te -180 -90 180 90 -ts 4320 2160 \
+      -ot Byte -burn 1 -a_nodata 255 \
+      -l narr4326 data/narr4326.shp data/narr4326.tif
+  
+#+END_SRC
+
+#+RESULTS:
+: 0...10...20...30...40...50...60...70...80...90...100 - done.
+
+Inspect the result and compose a row,col grid list.
+
+#+BEGIN_SRC R :results output
+  narr4326 <- raster( "data/narr4326.tif")
+  
+  world5min <- raster()
+  res( world5min) <- 5/60
+  
+  
+  rowColDf <-
+    as.data.frame(
+      rowColFromCell(
+        world,
+        which(
+          as.logical(
+            narr4326[]))))
+  
+  head( rowColDf)
+  tail( rowColDf)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+  row col
+1 277 223
+2 277 224
+3 277 225
+4 277 226
+5 277 227
+6 277 228
+        row  col
+384435 1069 1341
+384436 1069 1342
+384437 1070 1339
+384438 1070 1340
+384439 1070 1341
+384440 1071 1341
+#+end_example
+
