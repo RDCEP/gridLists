@@ -14,7 +14,7 @@
 #+LINK_HOME: 
 #+XSLT:
 
-#+PROPERTY: session *R*
+#+PROPERTY: session *R:4*
 #+PROPERTY: eval yes
 
 * Download the GADM data
@@ -792,7 +792,7 @@ Inspect the result and compose a row,col grid list.
   rowColDf <-
     as.data.frame(
       rowColFromCell(
-        world,
+        world5min,
         which(
           as.logical(
             narr4326[]))))
@@ -817,5 +817,35 @@ Inspect the result and compose a row,col grid list.
 384438 1070 1340
 384439 1070 1341
 384440 1071 1341
+#+end_example
+
+#+BEGIN_SRC R :results silent
+  rowColDf$global5min <-
+    with(
+      rowColDf,
+      cellFromRowCol( world5min, row, col))
+  
+  write.csv(
+    rowColDf,
+    file= "data/narrMask5min.csv",
+    row.names= FALSE)
+#+END_SRC
+
+#+BEGIN_SRC sh :session :results verbatim
+  head data/narrMask5min.csv
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+"row","col","global5min"
+277,223,1192543
+277,224,1192544
+277,225,1192545
+277,226,1192546
+277,227,1192547
+277,228,1192548
+277,229,1192549
+277,230,1192550
+277,231,1192551
 #+end_example
 
